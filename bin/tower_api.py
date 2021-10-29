@@ -17,7 +17,7 @@ def getCredentials(sessionKey,realm):
       # list all credentials
       entities = entity.getEntities(['admin', 'passwords'], namespace=myapp,
                                     owner='nobody', sessionKey=sessionKey)
-   except Exception, e:
+   except Exception as e:
       log("Could not get %s credentials from splunk. Error: %s"
                       % (myapp, str(e)))
 
