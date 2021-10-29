@@ -13,37 +13,37 @@ __version__ = "1.0"
 
 # Setup Logger
 def setup_logging():
-    logger = logging.getLogger('splunk.tower_api')
-    SPLUNK_HOME = os.environ['SPLUNK_HOME']
-    LOGGING_DEFAULT_CONFIG_FILE = os.path.join(SPLUNK_HOME, 'etc', 'tower_api.log')
-    LOGGING_LOCAL_CONFIG_FILE = os.path.join(SPLUNK_HOME, 'etc', 'tower_api-local.cfg')
-    LOGGING_STANZA_NAME = 'python'
-    LOGGING_FILE_NAME = "tower_api.log"
-    BASE_LOG_PATH = os.path.join('var', 'log', 'splunk')
-    LOGGING_FORMAT = "%(asctime)s %(levelname)-s\t%(module)s:%(lineno)d - %(message)s"
-    splunk_log_handler = logging.handlers.RotatingFileHandler(os.path.join(SPLUNK_HOME, BASE_LOG_PATH, LOGGING_FILE_NAME), mode='a') 
-    splunk_log_handler.setFormatter(logging.Formatter(LOGGING_FORMAT))
-    logger.addHandler(splunk_log_handler)
-    splunk.setupSplunkLogger(logger, LOGGING_DEFAULT_CONFIG_FILE, LOGGING_LOCAL_CONFIG_FILE, LOGGING_STANZA_NAME)
-    return logger
+	logger = logging.getLogger('splunk.tower_api')
+	SPLUNK_HOME = os.environ['SPLUNK_HOME']
+	LOGGING_DEFAULT_CONFIG_FILE = os.path.join(SPLUNK_HOME, 'etc', 'tower_api.log')
+	LOGGING_LOCAL_CONFIG_FILE = os.path.join(SPLUNK_HOME, 'etc', 'tower_api-local.cfg')
+	LOGGING_STANZA_NAME = 'python'
+	LOGGING_FILE_NAME = "tower_api.log"
+	BASE_LOG_PATH = os.path.join('var', 'log', 'splunk')
+	LOGGING_FORMAT = "%(asctime)s %(levelname)-s\t%(module)s:%(lineno)d - %(message)s"
+	splunk_log_handler = logging.handlers.RotatingFileHandler(os.path.join(SPLUNK_HOME, BASE_LOG_PATH, LOGGING_FILE_NAME), mode='a') 
+	splunk_log_handler.setFormatter(logging.Formatter(LOGGING_FORMAT))
+	logger.addHandler(splunk_log_handler)
+	splunk.setupSplunkLogger(logger, LOGGING_DEFAULT_CONFIG_FILE, LOGGING_LOCAL_CONFIG_FILE, LOGGING_STANZA_NAME)
+	return logger
 
 #Securely retrieve Ansible Tower Credentials from Splunk REST API password endpoint
 def getCredentials(sessionKey,realm):
-   myapp = 'alert_ansible_tower'
-   try:
-      # list all credentials
-      entities = entity.getEntities(['admin', 'passwords'], namespace=myapp,
-                                    owner='nobody', sessionKey=sessionKey)
-   except Exception as e:
-      logger.error("Could not get %s credentials from splunk. Error: %s"
-                      % (myapp, str(e)))
+	myapp = 'alert_ansible_tower'
+	try:
+		# list all credentials
+		entities = entity.getEntities(['admin', 'passwords'], namespace=myapp,
+									owner='nobody', sessionKey=sessionKey)
+	except Exception as e:
+		logger.error("Could not get %s credentials from splunk. Error: %s"
+						% (myapp, str(e)))
 
-   # return first set of credentials
-   for i, c in entities.items():
-        if c.get('realm')  == realm:
-            return c['username'], c['clear_password']
+	# return first set of credentials
+	for i, c in entities.items():
+		if c.get('realm')  == realm:
+			return c['username'], c['clear_password']
 
-   logger.error("ERROR: No credentials have been found")
+	logger.error("ERROR: No credentials have been found")
 
 #Connect to Tower and authenticate using user/pass to receive auth token.
 def tower_auth(hostname,username,password):
@@ -89,9 +89,9 @@ def tower_launch(hostname,username,password,job_id,extra_vars):
 		logger.error(error.reason)
 #Logging Function 
 def log(settings):
-    f = open(os.path.join(os.environ["SPLUNK_HOME"], "var", "log", "splunk", "tower_api.log"), "a")
-    print(str(datetime.datetime.now().isoformat()), settings)
-    f.close()
+	f = open(os.path.join(os.environ["SPLUNK_HOME"], "var", "log", "splunk", "tower_api.log"), "a")
+	print(str(datetime.datetime.now().isoformat()), settings)
+	f.close()
 
 
 def main(payload):
@@ -135,13 +135,13 @@ def main(payload):
 if __name__ == "__main__":
 	logger = setup_logging()
 
-    # Check if script initiated with --execute
-    if len(sys.argv) < 2 or sys.argv[1] != "--execute":
-        #print >> sys.stderr, "FATAL Unsupported execution mode (expected --execute flag)"
-        sys.exit(1)
-    else:
-    	#Get Payload
-    	payload = json.loads(sys.stdin.read())
-    	logger.info("Job Started")
-        #Pass Pass Payload to main function
-    	main(payload)
+	# Check if script initiated with --execute
+	if len(sys.argv) < 2 or sys.argv[1] != "--execute":
+		#print >> sys.stderr, "FATAL Unsupported execution mode (expected --execute flag)"
+		sys.exit(1)
+	else:
+		#Get Payload
+		payload = json.loads(sys.stdin.read())
+		logger.info("Job Started")
+		#Pass Pass Payload to main function
+		main(payload)
