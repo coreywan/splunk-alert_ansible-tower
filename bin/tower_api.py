@@ -74,7 +74,7 @@ def tower_launch(hostname,username,password,job_id,extra_vars):
 #Logging Function 
 def log(settings):
     f = open(os.path.join(os.environ["SPLUNK_HOME"], "var", "log", "splunk", "tower_api.log"), "a")
-    print (str(datetime.datetime.now().isoformat()), settings 
+    print(str(datetime.datetime.now().isoformat()), settings)
     f.close()
 
 
