@@ -17,8 +17,8 @@ __version__ = "1.0"
 def setup_logging():
 	logger = logging.getLogger('splunk.tower_api')
 	SPLUNK_HOME = os.environ['SPLUNK_HOME']
-	LOGGING_DEFAULT_CONFIG_FILE = os.path.join(SPLUNK_HOME, 'etc', 'tower_api.cfg')
-	LOGGING_LOCAL_CONFIG_FILE = os.path.join(SPLUNK_HOME, 'etc', 'tower_api-local.cfg')
+	LOGGING_DEFAULT_CONFIG_FILE = os.path.join(SPLUNK_HOME, 'etc', 'log.cfg')
+	LOGGING_LOCAL_CONFIG_FILE = os.path.join(SPLUNK_HOME, 'etc', 'log-local.cfg')
 	LOGGING_STANZA_NAME = 'python'
 	LOGGING_FILE_NAME = "tower_api.log"
 	BASE_LOG_PATH = os.path.join('var', 'log', 'splunk')
