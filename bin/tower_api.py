@@ -1,6 +1,6 @@
 #!/usr/bin/python
 
-import sys, urllib2, json, tower_cli, os, datetime
+import sys, urllib, json, tower_cli, os, datetime
 import splunk.entity as entity
 # Tower Connect
 #
@@ -31,7 +31,7 @@ def getCredentials(sessionKey,realm):
 #Connect to Tower and authenticate using user/pass to receive auth token.
 def tower_auth(hostname,username,password):
 	try:
-		req = urllib2.Request(
+		req = urllib.Request(
 			url = 'https://' + hostname + '/api/v2/authtoken/',
 			headers = {
 				"Content-Type": "application/json"
@@ -41,11 +41,11 @@ def tower_auth(hostname,username,password):
 				"password": password
 			})
 		)
-		response = urllib2.urlopen(req)
+		response = urllib.urlopen(req)
 		results = json.loads(response.read())
 		token = results['token']
 		return token
-	except urllib2.URLError as error:
+	except urllib.URLError as error:
 		log(error.reason)
 
 def tower_launch(hostname,username,password,job_id,extra_vars):
@@ -55,7 +55,7 @@ def tower_launch(hostname,username,password,job_id,extra_vars):
 	
 	#Attempt to Launch Ansible Tower Job Template
 	try:
-		req = urllib2.Request(
+		req = urllib.Request(
 			url = 'https://' + hostname + '/api/v2/job_templates/' + job_id +'/launch/',
 			headers = {
 				"Content-Type": "application/json",
@@ -65,10 +65,10 @@ def tower_launch(hostname,username,password,job_id,extra_vars):
 				"extra_vars": extra_vars
 			})
 		)
-		response = urllib2.urlopen(req)
+		response = urllib.urlopen(req)
 		results = json.loads(response.read())
 		log("Job ID: " + str(results['job']) + " submitted successfully.")
-	except urllib2.URLError as error:
+	except urllib.URLError as error:
 		log(error.reason)
 #Logging Function 
 def log(settings):
