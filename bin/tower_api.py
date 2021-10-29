@@ -1,6 +1,7 @@
 #!/usr/bin/python
 
 import sys, urllib, json, tower_cli, os, datetime
+import logging, logging.handlers
 import splunk.entity as entity
 # Tower Connect
 #
@@ -73,7 +74,7 @@ def tower_launch(hostname,username,password,job_id,extra_vars):
 #Logging Function 
 def log(settings):
     f = open(os.path.join(os.environ["SPLUNK_HOME"], "var", "log", "splunk", "tower_api.log"), "a")
-    print >> f, str(datetime.datetime.now().isoformat()), settings 
+    print (str(datetime.datetime.now().isoformat()), settings 
     f.close()
 
 
