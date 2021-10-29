@@ -3,6 +3,8 @@
 import sys, urllib, json, tower_cli, os, datetime
 import logging, logging.handlers
 import splunk.entity as entity
+import splunk
+
 # Tower Connect
 #
 # This script is used as wrapper to connect to Ansible Tower API.
