@@ -10,7 +10,6 @@ import requests
 #
 # This script is used as wrapper to connect to Ansible Tower API.
 
-
 ## Original from:
 # __author__ = "Keith Rhea"
 # __email__ = "keithr@mindpointgroup.com"
@@ -127,7 +126,6 @@ def main(payload):
 	#Retrieve realm  from Payload configuration
 	realm = payload['configuration'].get('realm')
 
-
 	#Retrive Ansible Tower Credentials from Splunk REST API
 	username, password = getCredentials(sessionKey,realm)
 
@@ -136,8 +134,6 @@ def main(payload):
 
 	#Submit Ansible Tower Job
 	tower_launch(hostname,username,password,job_name,extra_vars)
-
-
 
 if __name__ == "__main__":
 	logger = setup_logging()
