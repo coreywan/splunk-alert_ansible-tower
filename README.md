@@ -1,8 +1,6 @@
-=== Alert Action Ansible Tower ===
+# Alert Action Ansible Tower
 
 Author: Corey Wanless
-
-Version/Date: 1.1 / 20180723
 
 Description: Custom Alert Action, that makes API calls to Ansible Tower to Launch Job Templates.  Originally inspired and forked from https://github.com/MindPointGroup/splunk-alert_ansible-tower
 
