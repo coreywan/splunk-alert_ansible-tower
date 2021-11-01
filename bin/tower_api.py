@@ -31,7 +31,7 @@ def setup_logging():
 
 #Securely retrieve Ansible Tower Credentials from Splunk REST API password endpoint
 def getCredentials(sessionKey,realm):
-	myapp = 'alert_ansible_tower'
+	myapp = 'splunk-alert_ansible-tower-master'
 	try:
 		# list all credentials
 		entities = entity.getEntities(['admin', 'passwords'], namespace=myapp,
