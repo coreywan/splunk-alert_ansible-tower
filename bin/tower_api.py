@@ -1,16 +1,24 @@
 #!/usr/bin/python
 
-import sys, urllib, json, tower_cli, os, datetime
+import sys, json, os, datetime
 import logging, logging.handlers
 import splunk.entity as entity
 import splunk
+import requests
 
 # Tower Connect
 #
 # This script is used as wrapper to connect to Ansible Tower API.
 
-__author__ = "Keith Rhea"
-__email__ = "keithr@mindpointgroup.com"
+
+## Original from:
+# __author__ = "Keith Rhea"
+# __email__ = "keithr@mindpointgroup.com"
+# __version__ = "1.0"
+
+# Refactored By:
+__author__ = "Corey Wanless"
+__email__ = "corey.wanless@wwt.com"
 __version__ = "1.0"
 
 # Setup Logger
@@ -47,61 +55,55 @@ def getCredentials(sessionKey,realm):
 
 	logger.error("ERROR: No credentials have been found")
 
-#Connect to Tower and authenticate using user/pass to receive auth token.
-def tower_auth(hostname,username,password):
+def tower_get_job_launch_link(hostname,username,password,job_name):
+	logger.info("Job Name: {}".format(job_name))
+	#Attempt to get launch link
 	try:
-		req = urllib.Request(
-			url = 'https://' + hostname + '/api/v2/authtoken/',
-			headers = {
-				"Content-Type": "application/json"
-			},
-			data = json.dumps({
-				"username": username,
-				"password": password
-			})
-		)
-		response = urllib.urlopen(req)
-		results = json.loads(response.read())
-		token = results['token']
-		return token
-	except urllib.URLError as error:
-		logger.error(error.reason)
-
-def tower_launch(hostname,username,password,job_id,extra_vars):
-	
-	#Authenticate to Ansible Tower and receive Auth Token.
-	token = tower_auth(hostname,username,password)
-	
-	#Attempt to Launch Ansible Tower Job Template
-	try:
-		req = urllib.Request(
-			url = 'https://' + hostname + '/api/v2/job_templates/' + job_id +'/launch/',
+		req = requests.get(
+			url = 'https://{}/api/v2/unified_job_templates/?name={}'.format(hostname,job_name),
 			headers = {
 				"Content-Type": "application/json",
-				"authorization": 'Token ' + token
 			},
-			data = json.dumps({
-				"extra_vars": extra_vars
-			})
+			verify = False,
+			auth = (username, password),
 		)
-		response = urllib.urlopen(req)
-		results = json.loads(response.read())
-		logger.info("Job ID: " + str(results['job']) + " submitted successfully.")
-	except urllib.URLError as error:
+		results = req.json()
+		logger.info("Unified Jobs Found: {}".format(results))
+		if results['count'] != 1:
+			logger.warn('There was {} templates found with the name of {}'.format(results['count'],job_name))
+		launch_link = results['results'][0]['related']['launch']
+		logger.info("Launch Link: {}".format(launch_link))
+		return launch_link
+	except requests.exceptions.RequestException as error:
 		logger.error(error.reason)
-#Logging Function 
-def log(settings):
-	f = open(os.path.join(os.environ["SPLUNK_HOME"], "var", "log", "splunk", "tower_api.log"), "a")
-	print(str(datetime.datetime.now().isoformat()), settings)
-	f.close()
 
+def tower_launch(hostname,username,password,job_name,extra_vars):
+	launch_link = tower_get_job_launch_link(hostname, username, password, job_name)
+
+	post_data = {
+		"url": "https://{}{}".format(hostname,launch_link),
+		"headers": {
+			"Content-Type": "application/json",
+		},
+		"verify": False,
+		"auth": (username, password),
+	}
+	if extra_vars != None:
+		post_data['data'] = {}
+		post_data['data']['extra_vars'] = extra_vars
+
+	#Attempt to Launch Ansible Tower Job Template
+	try:
+		req = requests.post(**post_data)
+		results = req.json()
+		logger.info("Job Info: {}".format(results))
+	except requests.exceptions.RequestException as error:
+		logger.error(error.reason)
 
 def main(payload):
 	#Setup Logger
 	global logger
-	
 
-	logger.debug('Start of script')
 	#Retrieve session key from payload to authenticate to Splunk REST API for secure credential retrieval
 	sessionKey = payload.get('session_key')
 
@@ -109,28 +111,20 @@ def main(payload):
 	hostname = payload['configuration'].get('hostname')
 
 	#Retrieve Ansible Tower Job Template ID from Payload configuration
-	job_id = payload['configuration'].get('job_id')
+	job_name = payload['configuration'].get('job_name')
 
 	#Retrieve realm  from Payload configuration
 	realm = payload['configuration'].get('realm')
 
-	#Retrieve Ansible Tower extra_vars Variable Name from Payload configuration
-	var_name = payload['configuration'].get('var_name')
-
-	#Retrieve Ansible Tower extra_vars Field to pull search value from Payload configuration
-	var_field = payload['configuration'].get('var_field')
-
-	#Retrieve Ansible Tower extra_vars value from Payload configuration
-	var_value = payload['result'].get(var_field)
-
-	#Assign extra_vars variable a value
-	extra_vars = str(var_name) + ": " + str(var_value)
 
 	#Retrive Ansible Tower Credentials from Splunk REST API
 	username, password = getCredentials(sessionKey,realm)
 
+	#Retrieve Extra Variables from Splunk REST API - Future Add to add Extra Variable Support
+	extra_vars = None
+
 	#Submit Ansible Tower Job
-	tower_launch(hostname,username,password,job_id,extra_vars)
+	tower_launch(hostname,username,password,job_name,extra_vars)
 
 
 
@@ -147,3 +141,4 @@ if __name__ == "__main__":
 		logger.info("Job Started")
 		#Pass Pass Payload to main function
 		main(payload)
+		logger.info("Job Completed")

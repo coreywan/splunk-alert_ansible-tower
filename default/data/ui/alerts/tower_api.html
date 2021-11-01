@@ -17,26 +17,23 @@
             </span>
         </div>
     </div>
-       
 
     <div class="control-group">
-        <label class="control-label" for="tower_api">Job ID</label>
+        <label class="control-label" for="tower_api">Job Name</label>
 
         <div class="controls">
-            <input type="text" class="input-xlarge" name="action.tower_api.param.job_id" id="tower_api" placeholder="12345" />
+            <input type="text" class="input-xlarge" name="action.tower_api.param.job_name" id="tower_api" placeholder="12345" />
         </div>
     </div>
     <div class="control-group">
         <div class="controls">
             <span class="help-block" style="display: block; position: static; width: auto; margin-left: 0;">
-                Ansible Tower Job Template ID
-                (ex. 12345). 
+                Ansible Tower Job Template Name 
                 <br />
                 <br />
             </span>
         </div>
     </div>
-       
 
     <div class="control-group">
         <label class="control-label" for="tower_api">Realm</label>
@@ -58,34 +55,16 @@
 
 
     <div class="control-group">
-        <label class="control-label" for="tower_api">Extra Var Name</label>
+        <label class="control-label" for="tower_api">Extra Variable JSON Data</label>
 
         <div class="controls">
-            <input type="text" class="input-xlarge" name="action.tower_api.param.var_name" id="tower_api" placeholder="ip" />
+            <input type="text" class="input-xlarge" name="action.tower_api.param.extra_var" id="tower_api" placeholder="ip" />
         </div>
     </div>
     <div class="control-group">
         <div class="controls">
             <span class="help-block" style="display: block; position: static; width: auto; margin-left: 0;">
-                Supply the extra variable name that will be passed to Ansible Tower.
-                <br />
-                <br />
-            </span>
-        </div>
-    </div>
-
-
-    <div class="control-group">
-        <label class="control-label" for="tower_api">Extra Var Field Name</label>
-
-        <div class="controls">
-            <input type="text" class="input-xlarge" name="action.tower_api.param.var_field" id="tower_api" placeholder="src_ip" />
-        </div>
-    </div>
-    <div class="control-group">
-        <div class="controls">
-            <span class="help-block" style="display: block; position: static; width: auto; margin-left: 0;">
-                Supply the field/column name from the alert query search results to be used as the value for extra variable.
+                Supply the extra variable data in json format that will be passed to Ansible Tower. `Ask at Launch` needs to be checked on the workflow/job template.
                 <br />
                 <br />
             </span>
