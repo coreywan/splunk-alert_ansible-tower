@@ -99,7 +99,6 @@ def tower_launch(hostname,username,password,job_name,extra_vars):
 		data['extra_vars'] = json.loads(extra_vars)
 		post_data['data'] = json.dumps(data)
 
-	logger.info("Job Post Data: {}".format(post_data))
 	#Attempt to Launch Ansible Tower Job Template
 	try:
 		req = requests.post(**post_data)
